@@ -58,4 +58,13 @@ public class Auctions {
 		ds.delete(auctionKey);
 		// TODO need to delete bids associated with this auction
 	}
+	
+	public static ArrayList<Entity> getRocommendedAuctions(Entity user) {
+		ArrayList<String> searchStrings = (ArrayList<String>)user.getProperty("arrayListSearchedStrings");
+		ArrayList<Entity> results = new ArrayList<Entity>();
+		for (String s : searchStrings) {
+			results.addAll(Auctions.searchAuctions(s));
+		}
+		return results;
+	}
 }

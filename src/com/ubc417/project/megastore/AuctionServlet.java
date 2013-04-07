@@ -67,9 +67,10 @@ public class AuctionServlet extends HttpServlet {
 			resp.sendRedirect("/");
 			return;
 		}
-		Key auctionKey = KeyFactory.stringToKey((req.getParameter("auctionKey")));
 		
 		if (req.getParameter("action").toLowerCase().equals("bid")) {
+			Key auctionKey = KeyFactory.stringToKey((req.getParameter("auctionKey")));
+			
 			// Handle creating bid here
 			int price = Integer.parseInt(req.getParameter("price"));
 			try {
@@ -81,6 +82,8 @@ public class AuctionServlet extends HttpServlet {
 			}
 			resp.sendRedirect("/auction?auctionKey=" + req.getParameter("auctionKey"));
 		} else if (req.getParameter("action").toLowerCase().equals("delete")) {
+			Key auctionKey = KeyFactory.stringToKey((req.getParameter("auctionKey")));
+			
 			// Delete the auction only if the logged in user is owner
 			if (user.getKey().equals(auctionKey.getParent())) {
 				// TODO tell user that auction deleted successfully
