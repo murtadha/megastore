@@ -26,11 +26,11 @@ public class Bids {
 			Entity bidEntity = new Entity("Bid", auctionKey);
 			bidEntity.setProperty("bidder", biddingUserKey);
 			bidEntity.setProperty("price", price);
-			ds.put(bidEntity);
+			ds.put(txn, bidEntity);
 			
 			Entity auctionToUpdate = ds.get(auctionKey);
 			auctionToUpdate.setProperty("highestBid", bidEntity.getKey());
-			ds.put(auctionToUpdate);
+			ds.put(txn, auctionToUpdate);
 			txn.commit();
 		} finally {
 			if(txn.isActive()){
@@ -68,13 +68,10 @@ public class Bids {
 		
 		if(bidKey != null){
 			ds.delete(bidKey);
-			return true;
-			
+			return true;	
 		} else {
 			return false;
-			
-		}
-		
+		}	
 	}
 	
 	//grabs all bids for some bidder's user key

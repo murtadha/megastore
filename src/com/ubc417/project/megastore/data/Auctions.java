@@ -53,9 +53,19 @@ public class Auctions {
 		return ds.prepare(query).asIterable();
 	}
 	
-	public static void deleteAuction(Key auctionKey){
+	public static void deleteAuction(Key auctionKey) throws EntityNotFoundException{
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		
+		//query grab all Bids where ancestor is auctionKey
+		Query q = new Query("Bid").setAncestor(auctionKey);
+		Iterable<Entity> iterableBidsToDelete = ds.prepare(q).asIterable();
+		
+		//delete all our bids
+		for(Entity bidToDelete : iterableBidsToDelete){
+			ds.delete(bidToDelete.getKey());
+		}
+		
+		//delete our auction
 		ds.delete(auctionKey);
-		// TODO need to delete bids associated with this auction
 	}
 }
