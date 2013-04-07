@@ -23,20 +23,19 @@ public class Bids {
 		}
 		
 		try{
+			Entity bidEntity = new Entity("Bid", auctionKey);
+			bidEntity.setProperty("bidder", biddingUserKey);
+			bidEntity.setProperty("price", price);
+			ds.put(bidEntity);
+			
 			Entity auctionToUpdate = ds.get(auctionKey);
-			auctionToUpdate.setProperty("highestBid", price);
+			auctionToUpdate.setProperty("highestBid", bidEntity.getKey());
 			ds.put(auctionToUpdate);
 			txn.commit();
 		} finally {
 			if(txn.isActive()){
 				txn.rollback();
-			} else {
-				Entity bidEntity = new Entity("Bid", auctionKey);
-				bidEntity.setProperty("bidder", biddingUserKey);
-				bidEntity.setProperty("price", price);
-				
-				ds.put(bidEntity);
-				
+			} else {	
 				success = true;
 			}
 		}
@@ -47,15 +46,24 @@ public class Bids {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Entity auctionToCheck =  ds.get(auctionKey);
 		
-		int highestBid = (Integer) auctionToCheck.getProperty("highestBid");
-		if(highestBid >= price){
+		Key highestBid = (Key) auctionToCheck.getProperty("highestBid");
+		long highestPrice;
+		
+		if (highestBid == null) {
+			highestPrice = (Long) auctionToCheck.getProperty("startPrice");
+		} else {
+			Entity bid = ds.get(highestBid);
+			highestPrice = (Long) bid.getProperty("price");
+		}
+		
+		if(highestPrice >= price) {
 			return false;
 		} else {
 			return true;
 		}
 	}
 
-	public static Boolean deleteBid(Key bidKey){
+	public static Boolean deleteBid(Key bidKey) {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		
 		if(bidKey != null){
@@ -72,7 +80,8 @@ public class Bids {
 	//grabs all bids for some bidder's user key
 	public static Iterable<Entity> getBidsForUser(Entity bidder){
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		Query q = new Query("Bids").setFilter(new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, Query.FilterOperator.EQUAL, bidder.getKey()));
+		Query q = new Query("Bid").setFilter(
+				new FilterPredicate("bidder", Query.FilterOperator.EQUAL, bidder.getKey()));
 		
 		return ds.prepare(q).asIterable();
 	}
