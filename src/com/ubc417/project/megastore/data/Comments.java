@@ -26,6 +26,7 @@ public class Comments {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Query q = new Query("Comment").setFilter(new FilterPredicate("target", FilterOperator.EQUAL, userKey));
 		
+		
 		Iterable<Entity> currentUserComments = ds.prepare(q).asIterable();
 		return currentUserComments;
 	}

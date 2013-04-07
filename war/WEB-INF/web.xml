@@ -44,6 +44,15 @@
 		<url-pattern>/search</url-pattern>
 	</servlet-mapping>
 	
+	<servlet>
+		<servlet-name>Auction</servlet-name>
+		<servlet-class>com.ubc417.project.megastore.AuctionServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Auction</servlet-name>
+		<url-pattern>/auction</url-pattern>
+	</servlet-mapping>
+	
 	<welcome-file-list>
 		<welcome-file>welcome.jsp</welcome-file>
 	</welcome-file-list>
