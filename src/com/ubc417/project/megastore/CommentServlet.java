@@ -9,10 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Entity;
 import com.ubc417.project.megastore.data.Comments;
 
 @SuppressWarnings("serial")
@@ -20,14 +17,11 @@ public class CommentServlet extends HttpServlet{
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException, ServletException {
 		HttpSession session = req.getSession();
-		Key userKey = (Key) session.getAttribute("userKey");
-		
-		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		Query q = new Query("Comment").setAncestor(userKey);
+		Entity currentUser = (Entity) session.getAttribute("user");
 		
 		ServletContext sc = getServletContext();
 		RequestDispatcher rd = sc.getRequestDispatcher("/comments.jsp");
-		req.setAttribute("comments", Comments.getComments(userKey));
+		req.setAttribute("comments", Comments.getComments(currentUser));
 		rd.forward(req, resp);
 	}
 	

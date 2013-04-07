@@ -22,12 +22,10 @@ public class Comments {
 		
 	}
 	
-	public static Iterable<Entity> getComments(Key userKey){
+	public static Iterable<Entity> getComments(Entity user){
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		Query q = new Query("Comment").setFilter(new FilterPredicate("target", FilterOperator.EQUAL, userKey));
+		Query q = new Query("Comment").setAncestor(user.getKey());
 		
-		
-		Iterable<Entity> currentUserComments = ds.prepare(q).asIterable();
-		return currentUserComments;
+		return ds.prepare(q).asIterable();
 	}
 }
