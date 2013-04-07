@@ -72,9 +72,9 @@ public class Bids {
 	//grabs all bids for some bidder's user key
 	public static Iterable<Entity> getBidsForUser(Entity bidder){
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		Query q = new Query("Bids").setFilter(new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, Query.FilterOperator.EQUAL, bidder.getKey()));
+		Query q = new Query("Bids");
 		
-		return ds.prepare(q).asIterable();
+		Iterable<Entity> allBids = ds.prepare(q).asIterable();
 	}
 	
 }
