@@ -10,6 +10,7 @@
 		Welcome <%= ((Entity)session.getAttribute("user")).getProperty("username") %>
 	</h1>
 	<a href="/logout">Logout</a>
+	<a href="/activity">Activity</a>
 	<form action="home" method="POST">
 		<h>Item Name:</h><input type="text" name="enteredItemName"/><br>
 		<h>Item Description:</h><input type="text" name="enteredItemDescription"/><br>

@@ -8,9 +8,10 @@ import com.google.appengine.api.datastore.Query;
 
 public class Comments {
 	//creates a new comment entity; inputs are the commentER's user key, the target user key and the comment (string)
-	public static Entity createComment(Key userCommenter, 
-			Key userTarget, 
-			String value){
+	public static Entity createComment(
+			Key userTarget,
+			Key userCommenter, 
+			String value) {
 		Entity commentEntity = new Entity("Comment", userTarget);
 		commentEntity.setProperty("commenter", userCommenter);
 		commentEntity.setProperty("value", value);

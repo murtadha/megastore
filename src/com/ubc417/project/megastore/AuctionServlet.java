@@ -17,6 +17,7 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.DatastoreService;
+import com.ubc417.project.megastore.data.Auctions;
 import com.ubc417.project.megastore.data.Bids;
 
 @SuppressWarnings("serial")
@@ -37,15 +38,12 @@ public class AuctionServlet extends HttpServlet {
 			Key key = KeyFactory.stringToKey(id);
 			Entity auction = ds.get(key);
 			req.setAttribute("auction", auction);
+			Entity owner = ds.get(auction.getParent());
+			req.setAttribute("owner", owner);
 			String startTime = new SimpleDateFormat("MM/dd/yyyy").format(auction.getProperty("startTime"));
 			String endTime = new SimpleDateFormat("MM/dd/yyyy").format(auction.getProperty("endTime"));
 			Key highestBid = (Key) auction.getProperty("highestBid");
 			String price;
-			System.out.printf("auctionKey = %s, parentKey = %s, userKey = %s\n",
-					KeyFactory.keyToString(auction.getKey()),
-					KeyFactory.keyToString(auction.getParent()),
-					KeyFactory.keyToString(((Entity)req.getSession().getAttribute("user")).getKey())
-					);
 			if (highestBid == null) {
 				price = auction.getProperty("startPrice").toString();
 			} else {
@@ -64,21 +62,39 @@ public class AuctionServlet extends HttpServlet {
 	}
 	
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		// Handle creating bid here
 		Entity user = (Entity)req.getSession().getAttribute("user");
 		if (user == null) {
 			resp.sendRedirect("/");
 			return;
 		}
-		int price = Integer.parseInt(req.getParameter("price"));
 		Key auctionKey = KeyFactory.stringToKey((req.getParameter("auctionKey")));
-		try {
-			Bids.createBid(auctionKey, user.getKey(), price);
-		} catch (EntityNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		
+		if (req.getParameter("action").toLowerCase().equals("bid")) {
+			// Handle creating bid here
+			int price = Integer.parseInt(req.getParameter("price"));
+			try {
+				Bids.createBid(auctionKey, user.getKey(), price);
+				// TODO show success message
+			} catch (EntityNotFoundException e) {
+				e.printStackTrace();
+				// TODO show error message
+			}
+			resp.sendRedirect("/auction?auctionKey=" + req.getParameter("auctionKey"));
+		} else if (req.getParameter("action").toLowerCase().equals("delete")) {
+			// Delete the auction only if the logged in user is owner
+			if (user.getKey().equals(auctionKey.getParent())) {
+				// TODO tell user that auction deleted successfully
+				Auctions.deleteAuction(auctionKey);
+				resp.sendRedirect("/");
+			} else {
+				// TODO create jsp file for failing to delete auction beceause you don't own it
+				resp.sendRedirect("/createAuctionError.jsp");
+			}
+		} else {
+			// shouldn't be here
+			System.err.println("User trying to mess with the system. Log this attempt! " + req);
+			resp.sendRedirect("/");
 		}
-		resp.sendRedirect("/auction?auctionKey=" + req.getParameter("auctionKey"));
 	}
 
 }

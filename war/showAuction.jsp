@@ -10,6 +10,7 @@
 	</head>
 	<body>
 		<% Entity auction = (Entity)request.getAttribute("auction"); %>
+		<% Entity owner = (Entity)request.getAttribute("owner"); %>
 		
 		<% if (auction == null) { %>
 			<h>Couldn't find auction with id=<%= request.getParameter("id") %></h>
@@ -18,21 +19,20 @@
 			<h>Description:</h>
 			<%= auction.getProperty("description") %>
 			<ul>
+			<li>Owner: <a href="/user?userKey=<%=KeyFactory.keyToString(owner.getKey())%>"><%= owner.getProperty("username") %></a></li>
 			<li>Highest Bid: <%= request.getAttribute("highestBid") %></li>
 			<li>Start Time: <%= request.getAttribute("startTime") %></li>
 			<li>End Time: <%= request.getAttribute("endTime") %></li>
 			</ul>
+			<form action="/auction" method="POST">
+			<input type="hidden" name="auctionKey" value="<%= KeyFactory.keyToString(auction.getKey()) %>" />
 			<% if (auction.getParent().equals(((Entity)session.getAttribute("user")).getKey())) {%>
-				<form action="/auction" method="DELETE">
-				<input type="submit" value="Delete"/><br>
-				<input type="hidden" name="auctionKey" value="<%= KeyFactory.keyToString(auction.getKey()) %>" />
-				</form>
+				<input type="submit" value="Delete" name="action"/><br>
 			<% } else { %>
-				<form action="/auction" method="POST">
 				Bid:<input type="text" name="price"/><br>
-				<input type="hidden" name="auctionKey" value="<%= KeyFactory.keyToString(auction.getKey()) %>" />
-				</form>
+				<input type="submit" value="Bid" name="action"/><br>
 			<% } %>
+			</form>
 		<% } %>
  	</body>
 </html>

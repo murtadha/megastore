@@ -53,5 +53,6 @@ public class Auctions {
 	public static void deleteAuction(Key auctionKey){
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		ds.delete(auctionKey);
+		// TODO need to delete bids associated with this auction
 	}
 }
