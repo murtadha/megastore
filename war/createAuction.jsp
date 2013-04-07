@@ -14,6 +14,7 @@
 		<h>Item Name:</h><input type="text" name="enteredItemName"/><br>
 		<h>Item Description:</h><input type="text" name="enteredItemDescription"/><br>
 		<h>Starting Bid:</h><input type="text" name="enteredStartingBid"/><br>
+		<h>Period:</h><input type="text" name="enteredPeriod"/>hours<br>
 		<input type="submit" name="buttonEvent" value="createAuction"/><br>
 	</form>
 	

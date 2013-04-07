@@ -8,7 +8,7 @@
 	<body>
 		<h2>Search</h2>
 		<form action="/search" method="GET">
-		<input type="text" name="search_string"/><br>
+		<input type="text" name="searchString"/><br>
 		</form>
 		
 		<ul>

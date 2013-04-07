@@ -1,6 +1,7 @@
 package com.ubc417.project.megastore;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Iterator;
 
 import javax.servlet.RequestDispatcher;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 import com.ubc417.project.megastore.data.Auctions;
 import com.ubc417.project.megastore.data.Users;
 
@@ -28,7 +30,7 @@ public class HomeServlet extends HttpServlet{
 			rd.forward(req, resp);
 		} else {
 			ServletContext sc = getServletContext();
-			RequestDispatcher rd = sc.getRequestDispatcher("/home.jsp");
+			RequestDispatcher rd = sc.getRequestDispatcher("/createAuction.jsp");
 			rd.forward(req, resp);
 		}
 	}
@@ -40,10 +42,19 @@ public class HomeServlet extends HttpServlet{
 		if(req.getParameter("buttonEvent").equals("createAuction")){
 			String enteredItemName = req.getParameter("enteredItemName");
 			String enteredItemDescription = req.getParameter("enteredItemDescription");
-			String enteredStartingBid = req.getParameter("enteredStartingBid");
+			int startingPrice = Integer.parseInt(req.getParameter("enteredStartingBid"));
+			int period = Integer.parseInt(req.getParameter("enteredPeriod"));
+			HttpSession session = req.getSession();
+			Key owner = (Key)session.getAttribute("userKey");
+			long startTime = System.currentTimeMillis();
 			
-			Entity createdItem = Auctions.CreateItem(enteredItemName, enteredItemDescription, enteredStartingBid, 
-					null);
+			Entity createdItem = Auctions.createAuction(
+					owner,
+					enteredItemName,
+					enteredItemDescription,
+					startTime,
+					startTime + period*3600,
+					startingPrice);
 			if(createdItem != null){
 				resp.sendRedirect("/createAuctionSuccess");
 				
