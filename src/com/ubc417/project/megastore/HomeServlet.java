@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.appengine.api.datastore.Entity;
-import com.ubc417.project.megastore.data.Items;
+import com.ubc417.project.megastore.data.Auctions;
 import com.ubc417.project.megastore.data.Users;
 
 @SuppressWarnings("serial")
@@ -42,7 +42,7 @@ public class HomeServlet extends HttpServlet{
 			String enteredItemDescription = req.getParameter("enteredItemDescription");
 			String enteredStartingBid = req.getParameter("enteredStartingBid");
 			
-			Entity createdItem = Items.CreateItem(enteredItemName, enteredItemDescription, enteredStartingBid, 
+			Entity createdItem = Auctions.CreateItem(enteredItemName, enteredItemDescription, enteredStartingBid, 
 					null);
 			if(createdItem != null){
 				resp.sendRedirect("/createAuctionSuccess");

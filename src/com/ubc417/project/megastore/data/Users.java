@@ -7,6 +7,7 @@ package com.ubc417.project.megastore.data;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
 
 public class Users {
@@ -24,6 +25,19 @@ public class Users {
 		}
 		return userEntity;
 		
+	}
+	
+	public static Boolean DeleteUser(Key userKey){
+		DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
+		if(userKey != null){
+			datastoreService.delete(userKey);
+			return true;
+			
+		} else {
+			return false;
+			
+		}
+
 	}
 	
 	public static Iterable<Entity> GetAllUsers(){

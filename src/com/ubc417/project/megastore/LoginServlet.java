@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.repackaged.com.google.api.client.util.Key;
 import com.ubc417.project.megastore.data.Users;
 
 @SuppressWarnings("serial")
@@ -25,11 +26,13 @@ public class LoginServlet extends HttpServlet {
 		//do login stuff
 		System.err.println("DEBUG::doing login stuff...");
 		Boolean loginSuccessful = false;
+		com.google.appengine.api.datastore.Key userKey = null;
 		for(Entity user : Users.GetAllUsers()){
 			//check if username and password match
 			if(user.getProperty("username").equals(enteredUsername)
 					&& user.getProperty("password").equals(enteredPassword)){
 				//if yes break and redirect
+				userKey = user.getKey();
 				loginSuccessful = true;
 				break;
 			}
@@ -37,7 +40,8 @@ public class LoginServlet extends HttpServlet {
 		
 		if(loginSuccessful){
 			//redirect to home screen
-			HttpSession session = req.getSession(); 
+			HttpSession session = req.getSession();
+			session.setAttribute("userKey", userKey);
 			session.setAttribute("username", enteredUsername);
 			resp.sendRedirect("/");
 		} else {

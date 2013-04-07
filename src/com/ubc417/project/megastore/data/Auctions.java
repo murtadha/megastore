@@ -3,16 +3,20 @@ package com.ubc417.project.megastore.data;
 import java.util.ArrayList;
 import com.google.appengine.api.datastore.*;
 
-public class Items {
-	public static Entity CreateItem(String itemName, 
-			String itemDescription, 
-			String startingBid, 
-			String seller){
+public class Auctions {
+	public static Entity CreateItem(String name, 
+			String owner, 
+			String startTime, 
+			String endTime,
+			String description,
+			int startPrice){
 		Entity itemEntity = new Entity("Item");
-		itemEntity.setProperty("itemName", itemName);
-		itemEntity.setProperty("itemDescription", itemDescription);
-		itemEntity.setProperty("startingBid", startingBid);
-		itemEntity.setProperty("seller", seller);	
+		itemEntity.setProperty("name", name);
+		itemEntity.setProperty("owner", owner);
+		itemEntity.setProperty("startTime", startTime);
+		itemEntity.setProperty("endTime", endTime);
+		itemEntity.setProperty("description", description);
+		itemEntity.setProperty("startPrice", startPrice);
 		
 		DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
 		datastoreService.put(itemEntity);
@@ -21,7 +25,7 @@ public class Items {
 		
 	}
 	
-	public static ArrayList<Entity> searchItems(String searchString){
+	public static ArrayList<Entity> searchAuctions(String searchString){
 		DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
 		Query query = new Query("Item");
 		
@@ -29,7 +33,7 @@ public class Items {
 		ArrayList<Entity> returnedItems = null;
 		
 		for(Entity currentItem : allItems){
-			if(currentItem.getProperty("itemName").toString().contains(searchString)){
+			if(currentItem.getProperty("name").toString().contains(searchString)){
 				extracted(returnedItems).add(currentItem);
 			
 			}
