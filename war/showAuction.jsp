@@ -29,7 +29,7 @@
 				</form>
 			<% } else { %>
 				<form action="/auction" method="POST">
-				Bid:<input type="text" name="bidValue"/><br>
+				Bid:<input type="text" name="price"/><br>
 				<input type="hidden" name="auctionKey" value="<%= KeyFactory.keyToString(auction.getKey()) %>" />
 				</form>
 			<% } %>

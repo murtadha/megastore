@@ -17,7 +17,7 @@ public class Auctions {
 		itemEntity.setProperty("endTime", endTime);
 		itemEntity.setProperty("description", description);
 		itemEntity.setProperty("startPrice", startingPrice);
-		itemEntity.setProperty("highestBid", "null");
+		itemEntity.setProperty("highestBid", null);
 		
 		DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
 		datastoreService.put(itemEntity);

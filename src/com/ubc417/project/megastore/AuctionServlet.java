@@ -13,9 +13,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.DatastoreService;
+import com.ubc417.project.megastore.data.Bids;
 
 @SuppressWarnings("serial")
 public class AuctionServlet extends HttpServlet {
@@ -37,19 +39,18 @@ public class AuctionServlet extends HttpServlet {
 			req.setAttribute("auction", auction);
 			String startTime = new SimpleDateFormat("MM/dd/yyyy").format(auction.getProperty("startTime"));
 			String endTime = new SimpleDateFormat("MM/dd/yyyy").format(auction.getProperty("endTime"));
-			String highestBid = (String) auction.getProperty("highestBid");
+			Key highestBid = (Key) auction.getProperty("highestBid");
 			String price;
 			System.out.printf("auctionKey = %s, parentKey = %s, userKey = %s\n",
 					KeyFactory.keyToString(auction.getKey()),
 					KeyFactory.keyToString(auction.getParent()),
 					KeyFactory.keyToString(((Entity)req.getSession().getAttribute("user")).getKey())
 					);
-			if (highestBid.equals("null")) {
+			if (highestBid == null) {
 				price = auction.getProperty("startPrice").toString();
 			} else {
-				Key key2 = KeyFactory.createKey("Bid", highestBid);
-				Entity bid = ds.get(key2);
-				price = (String) bid.getProperty("price");
+				Entity bid = ds.get(highestBid);
+				price = bid.getProperty("price").toString();
 			}
 			req.setAttribute("highestBid", price);
 			req.setAttribute("startTime", startTime);
@@ -62,8 +63,22 @@ public class AuctionServlet extends HttpServlet {
 		rd.forward(req, resp);
 	}
 	
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) {
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		// Handle creating bid here
+		Entity user = (Entity)req.getSession().getAttribute("user");
+		if (user == null) {
+			resp.sendRedirect("/");
+			return;
+		}
+		int price = Integer.parseInt(req.getParameter("price"));
+		Key auctionKey = KeyFactory.stringToKey((req.getParameter("auctionKey")));
+		try {
+			Bids.createBid(auctionKey, user.getKey(), price);
+		} catch (EntityNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		resp.sendRedirect("/auction?auctionKey=" + req.getParameter("auctionKey"));
 	}
 
 }
