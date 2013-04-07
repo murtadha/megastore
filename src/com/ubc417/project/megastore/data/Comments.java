@@ -3,7 +3,10 @@ package com.ubc417.project.megastore.data;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 public class Comments {
 	public static Entity createComment(String commenter, String target, String value){
@@ -19,11 +22,11 @@ public class Comments {
 		
 	}
 	
-	public static Iterable<Entity> getComments(String username){
+	public static Iterable<Entity> getComments(Key userKey){
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		Query q = new Query("Comment");
+		Query q = new Query("Comment").setFilter(new FilterPredicate("target", FilterOperator.EQUAL, userKey));
 		
-		Iterable<Entity> allComments = ds.prepare(q).asIterable();
-		return allComments;
+		Iterable<Entity> currentUserComments = ds.prepare(q).asIterable();
+		return currentUserComments;
 	}
 }
