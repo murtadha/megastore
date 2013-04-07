@@ -1,6 +1,8 @@
 package com.ubc417.project.megastore.data;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
+
 import com.google.appengine.api.datastore.*;
 
 public class Auctions {
@@ -29,17 +31,18 @@ public class Auctions {
 		DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
 		Query query = new Query("Auction");
 		
-		Iterable<Entity> allItems = datastoreService.prepare(query).asIterable();
-		ArrayList<Entity> returnedItems = new ArrayList<Entity>();
+		Iterable<Entity> allAuctions = datastoreService.prepare(query).asIterable();
+		ArrayList<Entity> returnedAuctions = new ArrayList<Entity>();
 		
 		// TODO: improve search algo
-		for(Entity currentItem : allItems) {
-			if(currentItem.getProperty("name").toString().contains(searchString)) {
-				returnedItems.add(currentItem);
+		for(Entity currentAuction : allAuctions) {
+			String currentAuctionNameString = currentAuction.getProperty("name").toString();
+			if(Pattern.compile(Pattern.quote(searchString), Pattern.CASE_INSENSITIVE).matcher(currentAuctionNameString).find()) {
+				returnedAuctions.add(currentAuction);
 			}
 		}
 		
-		return returnedItems;
+		return returnedAuctions;
 	}
 	
 	public static Iterable<Entity> getUserAuctions(Entity user) {
