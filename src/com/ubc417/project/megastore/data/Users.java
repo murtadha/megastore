@@ -4,24 +4,30 @@
 
 package com.ubc417.project.megastore.data;
 
+import java.util.ArrayList;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
 
 public class Users {
 	public static Entity CreateUser(String username, String password, boolean store){
-		//grab numUsers
-		
 		Entity userEntity = new Entity("User");
+		ArrayList<String> arrayListSearchedStrings = new ArrayList<String>();
+		for(int i = 0; i<3; i++){
+			arrayListSearchedStrings.add("dummy");
+		}
+		
 		userEntity.setProperty("username", username);
 		userEntity.setProperty("password", password);
+		userEntity.setProperty("arrayListSearchedStrings", arrayListSearchedStrings);
 		
 		if(store){
 			DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
 			datastoreService.put(userEntity);
-			
 		}
 		return userEntity;
 		
@@ -34,10 +40,8 @@ public class Users {
 			return true;
 			
 		} else {
-			return false;
-			
+			return false;	
 		}
-
 	}
 	
 	public static Iterable<Entity> GetAllUsers(){
@@ -48,4 +52,18 @@ public class Users {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static void addSearchString(Entity user, String searchStringToAdd) throws EntityNotFoundException{
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		
+		//TODO:wrap in txn
+		Entity userEntity = ds.get(user.getKey());
+		ArrayList<String> arrayListSearchedStrings = ((ArrayList<String>) userEntity.getProperty("arrayListSearchedStrings"));
+			
+		arrayListSearchedStrings.remove(0);
+		arrayListSearchedStrings.add(searchStringToAdd);
+		userEntity.setProperty("arrayListSearchedStrings", arrayListSearchedStrings);
+		
+		ds.put(userEntity);
+	}
 }
