@@ -53,6 +53,15 @@
 		<url-pattern>/auction</url-pattern>
 	</servlet-mapping>
 	
+	<servlet>
+		<servlet-name>Activity</servlet-name>
+		<servlet-class>com.ubc417.project.megastore.ActivityServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Activity</servlet-name>
+		<url-pattern>/activity</url-pattern>
+	</servlet-mapping>
+	
 	<welcome-file-list>
 		<welcome-file>welcome.jsp</welcome-file>
 	</welcome-file-list>

@@ -42,20 +42,12 @@ public class Auctions {
 		return returnedItems;
 	}
 	
-	public static ArrayList<Entity> getCurrentUserAuctions(String owner) {
+	public static Iterable<Entity> getUserAuctions(Entity user) {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Query query = new Query("Auction");
+		query.setAncestor(user.getKey());
 		
-		Iterable<Entity> allItems = ds.prepare(query).asIterable();
-		ArrayList<Entity> returnedItems = new ArrayList<Entity>();
-		
-		for(Entity currentItem : allItems) {
-			if(currentItem.getProperty("owner").toString().contains(owner)){
-				returnedItems.add(currentItem);
-			}
-		}
-		
-		return returnedItems;
+		return ds.prepare(query).asIterable();
 	}
 	
 	//TODO
