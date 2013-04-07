@@ -5,18 +5,18 @@ import com.google.appengine.api.datastore.*;
 
 public class Auctions {
 	public static Entity createAuction(String name, 
-			String owner, 
 			String startTime, 
 			String endTime,
 			String description,
-			int startPrice){
+			int currentPrice,
+			Key highestBid){
 		Entity itemEntity = new Entity("Item");
 		itemEntity.setProperty("name", name);
-		itemEntity.setProperty("owner", owner);
 		itemEntity.setProperty("startTime", startTime);
 		itemEntity.setProperty("endTime", endTime);
 		itemEntity.setProperty("description", description);
-		itemEntity.setProperty("startPrice", startPrice);
+		itemEntity.setProperty("startPrice", currentPrice);
+		itemEntity.setProperty("highestBid", highestBid);
 		
 		DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
 		datastoreService.put(itemEntity);

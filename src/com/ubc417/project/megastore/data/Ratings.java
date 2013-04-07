@@ -43,6 +43,7 @@ public class Ratings {
 
 	private static ArrayList<Entity> extracted(ArrayList<Entity> ratingsForUser) {
 		return ratingsForUser;
+		
 	}
 	
 }
