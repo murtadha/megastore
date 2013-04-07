@@ -26,13 +26,13 @@ public class LoginServlet extends HttpServlet {
 		//do login stuff
 		System.err.println("DEBUG::doing login stuff...");
 		Boolean loginSuccessful = false;
-		Key userKey = null;
+		Entity currentUser = null;
 		for(Entity user : Users.GetAllUsers()){
 			//check if username and password match
 			if(user.getProperty("username").equals(enteredUsername)
 					&& user.getProperty("password").equals(enteredPassword)){
 				//if yes break and redirect
-				userKey = user.getKey();
+				currentUser = user;
 				loginSuccessful = true;
 				break;
 			}
@@ -41,8 +41,7 @@ public class LoginServlet extends HttpServlet {
 		if(loginSuccessful){
 			//redirect to home screen
 			HttpSession session = req.getSession();
-			session.setAttribute("userKey", userKey);
-			session.setAttribute("username", enteredUsername);
+			session.setAttribute("user", currentUser);
 			resp.sendRedirect("/");
 		} else {
 			//display error page

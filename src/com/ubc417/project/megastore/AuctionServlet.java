@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 
 
+import javax.mail.Session;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -23,22 +24,30 @@ public class AuctionServlet extends HttpServlet {
 	
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) 
 			throws ServletException, IOException {
-		String id= req.getParameter("id");
-		//Key key = KeyFactory.createKey("Auction", id);
-		Key key = KeyFactory.stringToKey(id);
+		String id = req.getParameter("auctionKey");
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		ServletContext sc = getServletContext();
 		
+		if (req.getSession().getAttribute("user") == null) {
+			resp.sendRedirect("/");
+			return;
+		}
+		
 		try {
+			Key key = KeyFactory.stringToKey(id);
 			Entity auction = ds.get(key);
 			req.setAttribute("auction", auction);
 			String startTime = new SimpleDateFormat("MM/dd/yyyy").format(auction.getProperty("startTime"));
 			String endTime = new SimpleDateFormat("MM/dd/yyyy").format(auction.getProperty("endTime"));
 			String highestBid = (String) auction.getProperty("highestBid");
 			String price;
+			System.out.printf("auctionKey = %s, parentKey = %s, userKey = %s\n",
+					KeyFactory.keyToString(auction.getKey()),
+					KeyFactory.keyToString(auction.getParent()),
+					KeyFactory.keyToString(((Entity)req.getSession().getAttribute("user")).getKey())
+					);
 			if (highestBid.equals("null")) {
 				price = auction.getProperty("startPrice").toString();
-				
 			} else {
 				Key key2 = KeyFactory.createKey("Bid", highestBid);
 				Entity bid = ds.get(key2);
@@ -47,7 +56,7 @@ public class AuctionServlet extends HttpServlet {
 			req.setAttribute("highestBid", price);
 			req.setAttribute("startTime", startTime);
 			req.setAttribute("endTime", endTime);
-		} catch (EntityNotFoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		

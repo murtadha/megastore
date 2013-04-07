@@ -32,10 +32,10 @@ public class RegisterServlet extends HttpServlet {
 			//check for duplicate username in our DB
 			resp.sendRedirect("/duplicateUsername.jsp");
 		} else {
-			Users.CreateUser(enteredUsername, enteredPassword, true);
+			Entity user = Users.CreateUser(enteredUsername, enteredPassword, true);
 			//redirect to home screen and save username
 			HttpSession session = req.getSession(); 
-			session.setAttribute("username", enteredUsername);
+			session.setAttribute("user", user);
 			resp.sendRedirect("/");
 		}
 		

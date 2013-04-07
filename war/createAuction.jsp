@@ -7,7 +7,7 @@
 <html>
 <body>
 	<h1>
-		Welcome <%= session.getAttribute("username") %>
+		Welcome <%= ((Entity)session.getAttribute("user")).getProperty("username") %>
 	</h1>
 	<a href="/logout">Logout</a>
 	<form action="home" method="POST">

@@ -19,12 +19,11 @@ import com.ubc417.project.megastore.data.Users;
 
 @SuppressWarnings("serial")
 public class HomeServlet extends HttpServlet{
-	private String username;
 	
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException, ServletException {
 		HttpSession session = req.getSession();
-		if (session.getAttribute("username") == null) {
+		if (session.getAttribute("user") == null) {
 			ServletContext sc = getServletContext();
 			RequestDispatcher rd = sc.getRequestDispatcher("/welcome.jsp");
 			rd.forward(req, resp);
@@ -39,28 +38,32 @@ public class HomeServlet extends HttpServlet{
 			throws IOException, ServletException {
 		System.err.println("DEBUG::in SearchServlet doPost");
 		
-		if(req.getParameter("buttonEvent").equals("createAuction")){
-			String enteredItemName = req.getParameter("enteredItemName");
-			String enteredItemDescription = req.getParameter("enteredItemDescription");
-			int startingPrice = Integer.parseInt(req.getParameter("enteredStartingBid"));
-			int period = Integer.parseInt(req.getParameter("enteredPeriod"));
+		if(req.getParameter("buttonEvent").equals("createAuction")) {
 			HttpSession session = req.getSession();
-			Key owner = (Key)session.getAttribute("userKey");
-			long startTime = System.currentTimeMillis();
+			Entity user = (Entity)session.getAttribute("user");
 			
-			Entity createdItem = Auctions.createAuction(
-					owner,
-					enteredItemName,
-					enteredItemDescription,
-					startTime,
-					startTime + period*3600,
-					startingPrice);
-			if(createdItem != null){
-				resp.sendRedirect("/createAuctionSuccess");
+			if (user != null) {
+				String enteredItemName = req.getParameter("enteredItemName");
+				String enteredItemDescription = req.getParameter("enteredItemDescription");
+				int startingPrice = Integer.parseInt(req.getParameter("enteredStartingBid"));
+				int period = Integer.parseInt(req.getParameter("enteredPeriod"));
 				
+				long startTime = System.currentTimeMillis();
+				
+				Entity createdItem = Auctions.createAuction(
+						user.getKey(),
+						enteredItemName,
+						enteredItemDescription,
+						startTime,
+						startTime + period*3600,
+						startingPrice);
+				if(createdItem != null){
+					resp.sendRedirect("/createAuctionSuccess");
+				} else {
+					resp.sendRedirect("/createAuctionError");
+				}
 			} else {
-				resp.sendRedirect("/createAuctionError");
-				
+				resp.sendRedirect("/");
 			}
 			
 		} else if(req.getParameter("searchButton").equals("search")){
