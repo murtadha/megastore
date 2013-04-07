@@ -5,23 +5,23 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 public class Comments {
-	public static Entity createComment(String commenter, String target, String value){
-		Entity commentEntity = new Entity("Comment");
+	//creates a new comment entity; inputs are the commentER's user key, the target user key and the comment (string)
+	public static Entity createComment(Key userCommenter, 
+			Key userTarget, 
+			String value){
+		Entity commentEntity = new Entity("Comment", userTarget);
+		commentEntity.setProperty("commenter", userCommenter);
 		commentEntity.setProperty("value", value);
-		commentEntity.setProperty("target", target);
-		commentEntity.setProperty("commenter", commenter);
 		
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		ds.put(commentEntity);
 		
 		return commentEntity;
-		
 	}
 	
+	//returns an iterable of comment entities for a given user key
 	public static Iterable<Entity> getComments(Entity user){
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Query q = new Query("Comment").setAncestor(user.getKey());
