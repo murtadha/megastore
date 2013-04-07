@@ -29,7 +29,6 @@ public class SearchServlet extends HttpServlet {
 		String message = "";
 		
 		if (searchString != null && !searchString.equals("")) {
-			
 			//add our search string to our queue
 			try {
 				Users.addSearchString(currentUser, searchString);
