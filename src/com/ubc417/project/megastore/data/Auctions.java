@@ -58,9 +58,8 @@ public class Auctions {
 		return returnedItems;
 	}
 	
-	//TODO
-	public static Iterable<Entity> getItemRecommendations(String username){
-		return null;
-		
+	public static void deleteAuction(Key auctionKey){
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		ds.delete(auctionKey);
 	}
 }
