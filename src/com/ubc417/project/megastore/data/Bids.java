@@ -36,9 +36,7 @@ public class Bids {
 				success = true;
 			}
 		}
-		
 		return success;
-		
 	}
 	
 	public static Boolean deleteBid(Key bidKey){
