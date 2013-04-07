@@ -13,23 +13,28 @@
 	</head>
 	<body>
 		<% Entity user = (Entity)request.getAttribute("user"); %>
+		<% boolean viewingSelf = user.getKey().equals(((Entity)session.getAttribute("user")).getKey()); %>
 		<h2>Viewing <u><%= user.getProperty("username") %>'s</u> Profile</h2>
 		Rating: <%= request.getAttribute("rating") %>
-		<form action="/user" method="post">
-			<select name="value">
-			<% for (int i=1; i<6; i++) { %>
-				<option value="<%=i%>"><%=i%></option>
-			<% } %>
-			</select>
-			<input type="submit" name="action" value="Rate" />
-			<input type="hidden" name="userKey" value="<%= KeyFactory.keyToString(user.getKey()) %>" />
-		</form>
+		<% if (viewingSelf == false) { %>
+			<form action="/user" method="post">
+				<select name="value">
+				<% for (int i=1; i<6; i++) { %>
+					<option value="<%=i%>"><%=i%></option>
+				<% } %>
+				</select>
+				<input type="submit" name="action" value="Rate" />
+				<input type="hidden" name="userKey" value="<%= KeyFactory.keyToString(user.getKey()) %>" />
+			</form>
+		<% } %>
 		<h4><u>Comments</u></h4>
-		<form action="/user" method="post">
-			<input type="text" name="value" />
-			<input type="submit" name="action" value="Comment" />
-			<input type="hidden" name="userKey" value="<%= KeyFactory.keyToString(user.getKey()) %>" />
-		</form>
+		<% if (viewingSelf == false) { %>
+			<form action="/user" method="post">
+				<input type="text" name="value" />
+				<input type="submit" name="action" value="Comment" />
+				<input type="hidden" name="userKey" value="<%= KeyFactory.keyToString(user.getKey()) %>" />
+			</form>
+		<% } %>
 		<ul>
 		<% Iterable<Entity> comments = (Iterable<Entity>)request.getAttribute("comments"); %>
 		<% if (comments == null) { %>

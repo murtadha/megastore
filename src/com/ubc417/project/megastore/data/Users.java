@@ -57,13 +57,12 @@ public class Users {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		
 		//TODO:wrap in txn
-		Entity userEntity = ds.get(user.getKey());
-		ArrayList<String> arrayListSearchedStrings = ((ArrayList<String>) userEntity.getProperty("arrayListSearchedStrings"));
+		ArrayList<String> arrayListSearchedStrings = ((ArrayList<String>) user.getProperty("arrayListSearchedStrings"));
 			
 		arrayListSearchedStrings.remove(0);
 		arrayListSearchedStrings.add(searchStringToAdd);
-		userEntity.setProperty("arrayListSearchedStrings", arrayListSearchedStrings);
+		user.setProperty("arrayListSearchedStrings", arrayListSearchedStrings);
 		
-		ds.put(userEntity);
+		ds.put(user);
 	}
 }

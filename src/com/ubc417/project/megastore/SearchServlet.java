@@ -23,15 +23,19 @@ public class SearchServlet extends HttpServlet {
 			throws ServletException, IOException {
 		String searchString = req.getParameter("searchString");
 		//grab our session's user entity
-		HttpSession currentSession = req.getSession();
-		Entity currentUser = (Entity) currentSession.getAttribute("user");
+		HttpSession session = req.getSession();
+		Entity user = (Entity) session.getAttribute("user");
+		if (user == null) {
+			resp.sendRedirect("/");
+			return;
+		}
 		ArrayList<Entity> list = null;
 		String message = "";
 		
 		if (searchString != null && !searchString.equals("")) {
 			//add our search string to our queue
 			try {
-				Users.addSearchString(currentUser, searchString);
+				Users.addSearchString(user, searchString);
 			} catch (EntityNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

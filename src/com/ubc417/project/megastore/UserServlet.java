@@ -61,7 +61,10 @@ public class UserServlet extends HttpServlet {
 			resp.sendRedirect("/");
 		} else {
 			Key target = KeyFactory.stringToKey(userKey);
-			if (req.getParameter("action").toLowerCase().equals("rate")) {
+			if (target.equals(user.getKey())) {
+				//TODO create jsp to show error here?
+				System.err.println("You sneaky user trying to rate yourself??");
+			} else if (req.getParameter("action").toLowerCase().equals("rate")) {
 				int value = Integer.parseInt(req.getParameter("value"));
 				Ratings.createRating(target, user.getKey(), value);
 			} else if (req.getParameter("action").toLowerCase().equals("comment")) {
