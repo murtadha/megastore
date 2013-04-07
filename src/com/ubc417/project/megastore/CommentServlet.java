@@ -23,7 +23,7 @@ public class CommentServlet extends HttpServlet{
 		Key userKey = (Key) session.getAttribute("userKey");
 		
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		Query q = new Query("Comment");
+		Query q = new Query("Comment").setAncestor(userKey);
 		
 		ServletContext sc = getServletContext();
 		RequestDispatcher rd = sc.getRequestDispatcher("/comments.jsp");

@@ -1,28 +1,43 @@
 package com.ubc417.project.megastore.data;
 
-import java.util.ArrayList;
-
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Transaction;
 
 public class Bids {
-	public static Entity createBid(String item, 
-			String bidder, 
+	public static Boolean createBid(Key auctionItem, 
+			Key bidder, 
 			int price,
-			Key auctionKey){
-		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();	
+			Key auctionKey) throws EntityNotFoundException{
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Transaction txn = ds.beginTransaction();
 		
-		Entity bidEntity = new Entity("Bid", auctionKey);
-		bidEntity.setProperty("item", item);
-		bidEntity.setProperty("bidder", bidder);
-		bidEntity.setProperty("price", price);
+		Boolean success = false;
 		
-		ds.put(bidEntity);
+		try{
+			Entity auctionToUpdate = ds.get(auctionItem);
+			auctionToUpdate.setProperty("highestBid", price);
+			ds.put(auctionToUpdate);
+			txn.commit();
+		} finally {
+			if(txn.isActive()){
+				txn.rollback();
+			} else {
+				Entity bidEntity = new Entity("Bid", auctionItem);
+				bidEntity.setProperty("bidder", bidder);
+				bidEntity.setProperty("price", price);
+				
+				ds.put(bidEntity);
+				
+				success = true;
+			}
+		}
 		
-		return bidEntity;
+		return success;
 		
 	}
 	
@@ -45,11 +60,6 @@ public class Bids {
 		Query q = new Query("Bids").setAncestor(user.getKey());
 		
 		return ds.prepare(q).asIterable();
-	}
-	
-	private static ArrayList<Entity> extracted(ArrayList<Entity> returnedItems) {
-		return returnedItems;
-		
 	}
 	
 }
