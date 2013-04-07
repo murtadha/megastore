@@ -21,7 +21,7 @@ public class Ratings {
 	}
 	
 	//grabs all ratings for given userKey. Takes average and returns an Int.
-	public static Integer getRatingsForUser(Entity user){
+	public static Float getRatingsForUser(Entity user){
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Query q = new Query("Rating").setAncestor(user.getKey());
 		
@@ -34,7 +34,7 @@ public class Ratings {
 			numRatings++;
 		}
 		
-		return numRatings > 0 ? (sumRatings/numRatings) : 0;
+		return numRatings > 0 ? ((float)sumRatings/numRatings) : 0;
 	}
 	
 }

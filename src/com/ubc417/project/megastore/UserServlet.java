@@ -19,6 +19,7 @@ import com.google.appengine.api.datastore.Key;
 import com.ubc417.project.megastore.data.Comments;
 import com.ubc417.project.megastore.data.Ratings;
 
+@SuppressWarnings("serial")
 public class UserServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException, ServletException {
@@ -34,7 +35,7 @@ public class UserServlet extends HttpServlet {
 			try {
 				user = ds.get(key);
 				req.setAttribute("user", user);
-				int rating = Ratings.getRatingsForUser(user);
+				float rating = Ratings.getRatingsForUser(user);
 				Iterable<Entity> comments = Comments.getComments(user);
 				req.setAttribute("comments", comments);
 				req.setAttribute("rating", rating);
@@ -54,11 +55,11 @@ public class UserServlet extends HttpServlet {
 			throws IOException, ServletException {
 		HttpSession session = req.getSession();
 		Entity user = (Entity) session.getAttribute("user");
+		String userKey = req.getParameter("userKey");
 		if (user == null) {
 			// Can't rate or comment if not logged in
 			resp.sendRedirect("/");
 		} else {
-			String userKey = req.getParameter("userKey");
 			Key target = KeyFactory.stringToKey(userKey);
 			if (req.getParameter("action").toLowerCase().equals("rate")) {
 				int value = Integer.parseInt(req.getParameter("value"));
@@ -72,7 +73,7 @@ public class UserServlet extends HttpServlet {
 				resp.sendRedirect("/");
 				return;
 			}
-			resp.sendRedirect("/user");
+			resp.sendRedirect("/user?userKey=" + userKey);
 		}
 	}
 }
