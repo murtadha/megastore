@@ -27,45 +27,5 @@ public class HomeServlet extends HttpServlet{
 			RequestDispatcher rd = sc.getRequestDispatcher("/createAuction.jsp");
 			rd.forward(req, resp);
 		}
-	}
-	
-	public void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws IOException, ServletException {
-		System.err.println("DEBUG::in SearchServlet doPost");
-		
-		if(req.getParameter("buttonEvent").equals("createAuction")) {
-			HttpSession session = req.getSession();
-			Entity user = (Entity)session.getAttribute("user");
-			
-			if (user != null) {
-				String enteredItemName = req.getParameter("enteredItemName");
-				String enteredItemDescription = req.getParameter("enteredItemDescription");
-				int startingPrice = Integer.parseInt(req.getParameter("enteredStartingBid"));
-				int period = Integer.parseInt(req.getParameter("enteredPeriod"));
-				
-				long startTime = System.currentTimeMillis();
-				
-				Entity createdItem = Auctions.createAuction(
-						user.getKey(),
-						enteredItemName,
-						enteredItemDescription,
-						startTime,
-						startTime + period*3600,
-						startingPrice);
-				if(createdItem != null){
-					resp.sendRedirect("/createAuctionSuccess");
-				} else {
-					resp.sendRedirect("/createAuctionError");
-				}
-			} else {
-				resp.sendRedirect("/");
-			}
-			
-		} else if(req.getParameter("searchButton").equals("search")){
-			//TODO:handle search
-			
-		}
-		
-	}
-
+	}	
 }

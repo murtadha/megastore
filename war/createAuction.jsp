@@ -11,12 +11,20 @@
 	</h1>
 	<a href="/logout">Logout</a>
 	<a href="/activity">Activity</a>
-	<form action="home" method="POST">
+	
+		<form action="/search" method="GET" >
+		<h2 style="display: inline-block;">Search</h2>
+		<input type="text" name="searchString"/>
+		<input type="submit" value="Search" />
+		</form>
+	
+	<h2>Create Auction</h2>
+	<form action="/auction" method="POST">
 		<h>Item Name:</h><input type="text" name="enteredItemName"/><br>
 		<h>Item Description:</h><input type="text" name="enteredItemDescription"/><br>
 		<h>Starting Bid:</h><input type="text" name="enteredStartingBid"/><br>
 		<h>Period:</h><input type="text" name="enteredPeriod"/>hours<br>
-		<input type="submit" name="buttonEvent" value="createAuction"/><br>
+		<input type="submit" name="action" value="Create"/><br>
 	</form>
 	
 </body>

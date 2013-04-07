@@ -90,6 +90,25 @@ public class AuctionServlet extends HttpServlet {
 				// TODO create jsp file for failing to delete auction beceause you don't own it
 				resp.sendRedirect("/createAuctionError.jsp");
 			}
+		} else if (req.getParameter("action").toLowerCase().equals("create")) {
+			String enteredItemName = req.getParameter("enteredItemName");
+			String enteredItemDescription = req.getParameter("enteredItemDescription");
+			int startingPrice = Integer.parseInt(req.getParameter("enteredStartingBid"));
+			int period = Integer.parseInt(req.getParameter("enteredPeriod"));
+			long startTime = System.currentTimeMillis();
+			
+			Entity createdItem = Auctions.createAuction(
+					user.getKey(),
+					enteredItemName,
+					enteredItemDescription,
+					startTime,
+					startTime + period*3600,
+					startingPrice);
+			if(createdItem != null) {
+				resp.sendRedirect("/createAuctionSuccess");
+			} else {
+				resp.sendRedirect("/createAuctionError");
+			}
 		} else {
 			// shouldn't be here
 			System.err.println("User trying to mess with the system. Log this attempt! " + req);

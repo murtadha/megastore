@@ -39,26 +39,17 @@ public class SearchServlet extends HttpServlet {
 			}
 			
 			list = Auctions.searchAuctions(searchString);
-			error = "Couldn't find items with name: " + searchString;
+			if (list.size() == 0)
+				message = "Couldn't find items with name: " + searchString;
 		} else {
-			list = null;
-			error = "Please provide a string to search for items";
+			message = "Please provide a string to search for items";
 		}
 		
-		if (list != null && list.size() > 0) {
-			items = new String[list.size()];
-			
-			for (int i = 0; i < items.length; i++) {
-				items[i] = (String)list.get(i).getProperty("name");
-			}
-		} else {
-			items = new String[1];
-			items[0] = error;
-		}
-		
+		req.setAttribute("auctions", list);
+		req.setAttribute("message", message);
+				
 		ServletContext sc = getServletContext();
 		RequestDispatcher rd = sc.getRequestDispatcher("/search.jsp");
-		req.setAttribute("items", items);
 		rd.forward(req, resp);
 	}
 
