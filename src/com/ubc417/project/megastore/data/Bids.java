@@ -40,22 +40,11 @@ public class Bids {
 		
 	}
 	
-	public static Iterable<Entity> getBidsForUser(String username){
+	public static Iterable<Entity> getBidsForUser(Entity user){
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		Query q = new Query("Bids");
+		Query q = new Query("Bids").setAncestor(user.getKey());
 		
-		Iterable<Entity> allBids = ds.prepare(q).asIterable();
-		ArrayList<Entity> returnedBids  = null;
-		
-		for(Entity currentBid : allBids){
-			if(currentBid.getProperty("name").toString().contains(username)){
-				extracted(returnedBids).add(currentBid);
-			
-			}
-			
-		}
-		
-		return extracted(returnedBids);
+		return ds.prepare(q).asIterable();
 	}
 	
 	private static ArrayList<Entity> extracted(ArrayList<Entity> returnedItems) {
