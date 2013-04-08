@@ -51,31 +51,29 @@ public class Users {
 	public static boolean DeleteUser(Key userKey){
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		
-		//delete all bids the user had made
+		Entity userEntity;
 		try {
-			Iterable<Entity> iterableBidsToDelete;
-			iterableBidsToDelete = Bids.getBidsForUser(ds.get(userKey));
-			if(iterableBidsToDelete != null){
-				for(Entity bidToDelete : iterableBidsToDelete){
-					Bids.deleteBid(bidToDelete.getKey());
-				}
+			userEntity = ds.get(userKey);
+		} catch (EntityNotFoundException e2) {
+			e2.printStackTrace();
+			return false;
+		}
+		
+		//delete all bids the user had made
+		Iterable<Entity> iterableBidsToDelete;
+		iterableBidsToDelete = Bids.getBidsForUser(userEntity);
+		if(iterableBidsToDelete != null){
+			for(Entity bidToDelete : iterableBidsToDelete){
+				Bids.deleteBid(bidToDelete.getKey());
 			}
-		} catch (EntityNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 		}
 		
 		//delete all auctions the user had made
-		try {
-			Iterable<Entity> iterableAuctionsToDelete = Auctions.getUserAuctions(ds.get(userKey));
-			if(iterableAuctionsToDelete != null){
-				for(Entity auctionToDelete : iterableAuctionsToDelete){
-					Auctions.deleteAuction(auctionToDelete.getKey());
-				}
+		Iterable<Entity> iterableAuctionsToDelete = Auctions.getUserAuctions(userEntity);
+		if(iterableAuctionsToDelete != null){
+			for(Entity auctionToDelete : iterableAuctionsToDelete){
+				Auctions.deleteAuction(auctionToDelete.getKey());
 			}
-		} catch (EntityNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		
 		//delete user and all shards of said user
