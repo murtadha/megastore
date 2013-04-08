@@ -51,27 +51,40 @@ public class Users {
 	public static boolean DeleteUser(Key userKey){
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		
-		Iterable<Entity> iterableAuctionsToDelete = null;
+		//delete all bids the user had made
 		try {
-			iterableAuctionsToDelete = Auctions.getUserAuctions(ds.get(userKey));
+			Iterable<Entity> iterableBidsToDelete;
+			iterableBidsToDelete = Bids.getBidsForUser(ds.get(userKey));
+			if(iterableBidsToDelete != null){
+				for(Entity bidToDelete : iterableBidsToDelete){
+					Bids.deleteBid(bidToDelete.getKey());
+				}
+			}
+		} catch (EntityNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		//delete all auctions the user had made
+		try {
+			Iterable<Entity> iterableAuctionsToDelete = Auctions.getUserAuctions(ds.get(userKey));
+			if(iterableAuctionsToDelete != null){
+				for(Entity auctionToDelete : iterableAuctionsToDelete){
+					Auctions.deleteAuction(auctionToDelete.getKey());
+				}
+			}
 		} catch (EntityNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		if(iterableAuctionsToDelete != null){
-			for(Entity auctionToDelete : iterableAuctionsToDelete){
-				ds.delete(auctionToDelete.getKey());
-			}
-		}
-		
+		//delete user and all shards of said user
 		if(userKey != null){
 			String username = userKey.getName();
 			for(int i = 0; i < NUM_SHARDS; i++){
 				Key key = KeyFactory.createKey("User", getShardedUsername(username, i));
 				ds.delete(key);
 			}
-			ds.delete(userKey);
 			return true;
 		} else {
 			return false;
