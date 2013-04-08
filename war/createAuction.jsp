@@ -11,6 +11,9 @@
 	</h1>
 	<a href="/logout">Logout</a>
 	<a href="/activity">Activity</a>
+	<form action="/user" method="post">
+		<input type="submit" name="action" value="Delete" />
+	</form>
 	
 		<form action="/search" method="GET" >
 		<h2 style="display: inline-block;">Search</h2>

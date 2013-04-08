@@ -53,7 +53,7 @@ public class Auctions {
 		return ds.prepare(query).asIterable();
 	}
 	
-	public static void deleteAuction(Key auctionKey) throws EntityNotFoundException{
+	public static void deleteAuction(Key auctionKey) {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		
 		//query grab all Bids where ancestor is auctionKey

@@ -18,6 +18,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Key;
 import com.ubc417.project.megastore.data.Comments;
 import com.ubc417.project.megastore.data.Ratings;
+import com.ubc417.project.megastore.data.Users;
 
 @SuppressWarnings("serial")
 public class UserServlet extends HttpServlet {
@@ -60,16 +61,28 @@ public class UserServlet extends HttpServlet {
 			// Can't rate or comment if not logged in
 			resp.sendRedirect("/");
 		} else {
-			Key target = KeyFactory.stringToKey(userKey);
-			if (target.equals(user.getKey())) {
-				//TODO create jsp to show error here?
-				System.err.println("You sneaky user trying to rate yourself??");
-			} else if (req.getParameter("action").toLowerCase().equals("rate")) {
+			
+			if (req.getParameter("action").toLowerCase().equals("rate")) {
+				Key target = KeyFactory.stringToKey(userKey);
+				if (target.equals(user.getKey())) {
+					//TODO create jsp to show error here?
+					System.err.println("You sneaky user trying to rate yourself??");
+				}
 				int value = Integer.parseInt(req.getParameter("value"));
 				Ratings.createRating(target, user.getKey(), value);
 			} else if (req.getParameter("action").toLowerCase().equals("comment")) {
+				Key target = KeyFactory.stringToKey(userKey);
+				if (target.equals(user.getKey())) {
+					//TODO create jsp to show error here?
+					System.err.println("Sorry dawg, can't comment about yourself!!");
+				}
 				String value = req.getParameter("value");
 				Comments.createComment(target, user.getKey(), value);
+			} else if (req.getParameter("action").toLowerCase().equals("delete")) {
+				Users.DeleteUser(user.getKey());
+				session.setAttribute("user", null);
+				resp.sendRedirect("/");
+				return;
 			} else {
 				// shouldn't be here
 				System.err.println("user trying to mess with us " + req);
