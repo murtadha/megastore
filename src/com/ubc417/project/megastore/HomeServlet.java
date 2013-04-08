@@ -1,6 +1,8 @@
 package com.ubc417.project.megastore;
 
 import java.io.IOException;
+import java.util.ArrayList;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -18,11 +20,14 @@ public class HomeServlet extends HttpServlet{
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException, ServletException {
 		HttpSession session = req.getSession();
-		if (session.getAttribute("user") == null) {
+		Entity user = (Entity) session.getAttribute("user");
+		if (user == null) {
 			ServletContext sc = getServletContext();
 			RequestDispatcher rd = sc.getRequestDispatcher("/welcome.jsp");
 			rd.forward(req, resp);
 		} else {
+			ArrayList<Entity> recommendations = Auctions.getRecommendedAuctions(user);
+			req.setAttribute("recommendations", recommendations);
 			ServletContext sc = getServletContext();
 			RequestDispatcher rd = sc.getRequestDispatcher("/createAuction.jsp");
 			rd.forward(req, resp);

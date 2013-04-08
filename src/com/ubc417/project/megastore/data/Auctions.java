@@ -69,11 +69,15 @@ public class Auctions {
 		ds.delete(auctionKey);
 	}
 	
-	public static ArrayList<Entity> getRocommendedAuctions(Entity user) {
+	public static ArrayList<Entity> getRecommendedAuctions(Entity user) {
 		ArrayList<String> searchStrings = (ArrayList<String>)user.getProperty("arrayListSearchedStrings");
 		ArrayList<Entity> results = new ArrayList<Entity>();
 		for (String s : searchStrings) {
-			results.addAll(Auctions.searchAuctions(s));
+			for (Entity e : Auctions.searchAuctions(s)) {
+				if (!results.contains(e)) {
+					results.add(e);
+				}
+			}
 		}
 		return results;
 	}

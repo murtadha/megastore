@@ -27,5 +27,12 @@
 		<input type="submit" name="action" value="Create"/><br>
 	</form>
 	
+	<% ArrayList<Entity> recommendations = (ArrayList<Entity>)request.getAttribute("recommendations"); %>
+	<h2>Recommendations</h2>
+	<ul>
+	<% for (Entity auction : recommendations) { %>
+		<li><a href="/auction?auctionKey=<%=KeyFactory.keyToString(auction.getKey())%>"><%= auction.getProperty("name") %></a></li>	
+	<% } %>
+	</ul>
 </body>
 </html>
