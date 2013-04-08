@@ -17,14 +17,12 @@ import com.google.appengine.api.datastore.Query;
 public class Users {
 	
 	public static final int NUM_SHARDS = 5;
+	public static final int NUM_SEARCH_STRINGS = 3;
 	
 	public static Entity CreateUser(String username, String password){
 		
 		ArrayList<String> arrayListSearchedStrings = new ArrayList<String>();
-		
-		for(int i = 0; i<3; i++) {
-			arrayListSearchedStrings.add("dummy");
-		}
+		arrayListSearchedStrings.ensureCapacity(NUM_SEARCH_STRINGS);
 		
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		
@@ -69,7 +67,6 @@ public class Users {
 		Query query = new Query("User");
 		
 		return datastoreService.prepare(query).asIterable();
-		
 	}
 	
 	public static Entity getUserForKey(Key userKey){
@@ -78,7 +75,7 @@ public class Users {
 		try {
 			userEntity = ds.get(userKey);
 		} catch (EntityNotFoundException e) {
-			System.err.println("ERROR::User nto found in getUserForKey");
+			System.err.println("ERROR::User not found in getUserForKey");
 			e.printStackTrace();
 		}
 		return userEntity;
@@ -92,7 +89,8 @@ public class Users {
 		ArrayList<String> arrayListSearchedStrings = ((ArrayList<String>) user.getProperty("arrayListSearchedStrings"));
 		
 		if(!arrayListSearchedStrings.contains(searchStringToAdd)){
-			arrayListSearchedStrings.remove(0);
+			if (arrayListSearchedStrings.size() >= NUM_SEARCH_STRINGS)
+				arrayListSearchedStrings.remove(0);
 			arrayListSearchedStrings.add(searchStringToAdd);
 			user.setProperty("arrayListSearchedStrings", arrayListSearchedStrings);
 		}
@@ -100,6 +98,7 @@ public class Users {
 		ds.put(user);
 	}
 
+	@SuppressWarnings("deprecation")
 	public static Key getShardedOwnerForAuction(Key owner) {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		int totalAuctions = 0;
