@@ -41,8 +41,8 @@ public class AuctionServlet extends HttpServlet {
 			req.setAttribute("auction", auction);
 			Entity owner = Users.getMainEntityFromShard(auction.getParent());
 			req.setAttribute("owner", owner);
-			String startTime = new SimpleDateFormat("MM/dd/yyyy").format(auction.getProperty("startTime"));
-			String endTime = new SimpleDateFormat("MM/dd/yyyy").format(auction.getProperty("endTime"));
+			String startTime = new SimpleDateFormat("k:m M/d/yyyy").format(auction.getProperty("startTime"));
+			String endTime = new SimpleDateFormat("k:m M/d/yyyy").format(auction.getProperty("endTime"));
 			Key highestBid = (Key) auction.getProperty("highestBid");
 			String price;
 			if (highestBid == null) {
@@ -108,7 +108,7 @@ public class AuctionServlet extends HttpServlet {
 					enteredItemName,
 					enteredItemDescription,
 					startTime,
-					startTime + period*3600,
+					startTime + period*3600*1000,
 					startingPrice);
 			if(createdItem != null) {
 				resp.sendRedirect("/createAuctionSuccess");

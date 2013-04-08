@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 <%@ page import="java.util.Map" %>
+<%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="com.google.appengine.api.datastore.Entity" %>
 <%@ page import="com.google.appengine.api.datastore.Key" %>
 <%@ page import="com.google.appengine.api.datastore.KeyFactory" %>
@@ -40,7 +41,10 @@
 		<% if (comments == null) { %>
 		Can't find any comments about user
 		<% } else for (Entity comment : comments) { %>
-		<li><%= comment.getProperty("value") %></li>
+			<li>
+			<%= comment.getProperty("value") %>
+			(<%= new SimpleDateFormat("k:m MM/dd/yyyy").format(comment.getProperty("timestamp")) %>)
+			</li>
 		<% } %>
 		</ul>		
  	</body>

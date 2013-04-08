@@ -20,7 +20,10 @@
 		<% if (auctions == null) { %>
 		Can't find any stupid auctions
 		<% } else for (Entity auction : auctions) { %>
-		<li><a href="/auction?auctionKey=<%=KeyFactory.keyToString(auction.getKey())%>"><%= auction.getProperty("name") %></a></li>
+		<li>
+			<a href="/auction?auctionKey=<%=KeyFactory.keyToString(auction.getKey())%>"><%= auction.getProperty("name") %></a>
+			<% if ((Long)auction.getProperty("endTime") < System.currentTimeMillis()) { %><b>EXPIRED</b><% } %>
+		</li>
 		<% } %>
 		<h4><u>Bids</u></h4>
 		<% Iterable<Entity> bids = (Iterable<Entity>)request.getAttribute("bids"); %>

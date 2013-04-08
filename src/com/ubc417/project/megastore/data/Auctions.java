@@ -38,7 +38,9 @@ public class Auctions {
 		// TODO: improve search algo
 		for(Entity currentAuction : allAuctions) {
 			String currentAuctionNameString = currentAuction.getProperty("name").toString();
-			if(Pattern.compile(Pattern.quote(searchString), Pattern.CASE_INSENSITIVE).matcher(currentAuctionNameString).find()) {
+			long endTime = (Long) currentAuction.getProperty("endTime");
+			if(endTime > System.currentTimeMillis() && 
+			   Pattern.compile(Pattern.quote(searchString), Pattern.CASE_INSENSITIVE).matcher(currentAuctionNameString).find()) {
 				returnedAuctions.add(currentAuction);
 			}
 		}
