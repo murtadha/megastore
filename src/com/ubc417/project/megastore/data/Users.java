@@ -58,10 +58,12 @@ public class Users {
 		
 		//TODO:wrap in txn
 		ArrayList<String> arrayListSearchedStrings = ((ArrayList<String>) user.getProperty("arrayListSearchedStrings"));
-			
-		arrayListSearchedStrings.remove(0);
-		arrayListSearchedStrings.add(searchStringToAdd);
-		user.setProperty("arrayListSearchedStrings", arrayListSearchedStrings);
+		
+		if(!arrayListSearchedStrings.contains(searchStringToAdd)){
+			arrayListSearchedStrings.remove(0);
+			arrayListSearchedStrings.add(searchStringToAdd);
+			user.setProperty("arrayListSearchedStrings", arrayListSearchedStrings);
+		}
 		
 		ds.put(user);
 	}
