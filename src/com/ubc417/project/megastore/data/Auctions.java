@@ -89,7 +89,7 @@ public class Auctions {
 		if(searchStrings != null){
 			for (String s : searchStrings) {
 				for (Entity e : Auctions.searchAuctions(s)) {
-					if (!results.contains(e)) {
+					if (!e.getParent().equals(user.getKey()) && !results.contains(e)) {
 						results.add(e);
 					}
 				}
