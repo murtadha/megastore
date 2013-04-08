@@ -1,5 +1,7 @@
 package com.ubc417.project.megastore.data;
 
+import java.util.ConcurrentModificationException;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -10,36 +12,47 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Transaction;
 
 public class Bids {
+	
+	private static final int NUM_TRIES = 7;
+	private static final long TRY_DELAY = 500;
+	
 	public static Boolean createBid(Key auctionKey, 
 			Key biddingUserKey, 
 			int price) throws EntityNotFoundException{
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		Transaction txn = ds.beginTransaction();
 		
-		Boolean success = false;
-		
-		if(!checkPriceSanity(auctionKey, price)){//if priceCheck fails...
-			return false;//fail out
-		}
-		
-		try{
-			Entity bidEntity = new Entity("Bid", auctionKey);
-			bidEntity.setProperty("bidder", biddingUserKey);
-			bidEntity.setProperty("price", price);
-			ds.put(txn, bidEntity);
-			
-			Entity auctionToUpdate = ds.get(auctionKey);
-			auctionToUpdate.setProperty("highestBid", bidEntity.getKey());
-			ds.put(txn, auctionToUpdate);
-			txn.commit();
-		} finally {
-			if(txn.isActive()){
-				txn.rollback();
-			} else {	
-				success = true;
+		int i = 0;
+		while(true){
+			Transaction txn = ds.beginTransaction();
+			try{
+//				Boolean success = false;
+				
+				if(!checkPriceSanity(auctionKey, price)){//if priceCheck fails...
+					return false;//fail out
+				}
+
+				Entity bidEntity = new Entity("Bid", auctionKey);
+				bidEntity.setProperty("bidder", biddingUserKey);
+				bidEntity.setProperty("price", price);
+				ds.put(txn, bidEntity);
+				
+				Entity auctionToUpdate = ds.get(auctionKey);
+				auctionToUpdate.setProperty("highestBid", bidEntity.getKey());
+				ds.put(txn, auctionToUpdate);
+			} finally {
+				try{
+					txn.commit();
+				} catch(final ConcurrentModificationException ex1) {
+					try { Thread.sleep(TRY_DELAY); }
+					catch(final InterruptedException ex2) {}
+					if (i++ < NUM_TRIES)
+						continue;
+					else
+						throw ex1;
+				}
 			}
+			return true;
 		}
-		return success;
 	}
 	
 	private static Boolean checkPriceSanity(Key auctionKey, int price) throws EntityNotFoundException {
