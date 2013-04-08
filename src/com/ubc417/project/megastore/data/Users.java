@@ -51,11 +51,14 @@ public class Users {
 	}
 	
 	public static Boolean DeleteUser(Key userKey){
-		DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		if(userKey != null){
-			datastoreService.delete(userKey);
+			String username = userKey.getName(); 
+			for (int i = 0; i < NUM_SHARDS; i++) {
+				Key key = KeyFactory.createKey("User", getShardedUsername(username, i));
+				ds.delete(key);
+			}
 			return true;
-			
 		} else {
 			return false;	
 		}
