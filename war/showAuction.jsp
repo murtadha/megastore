@@ -26,7 +26,7 @@
 			</ul>
 			<form action="/auction" method="POST">
 			<input type="hidden" name="auctionKey" value="<%= KeyFactory.keyToString(auction.getKey()) %>" />
-			<% if (auction.getParent().equals(((Entity)session.getAttribute("user")).getKey())) {%>
+			<% if (owner.getKey().equals(((Entity)session.getAttribute("user")).getKey())) {%>
 				<input type="submit" value="Delete" name="action"/><br>
 			<% } else { %>
 				Bid:<input type="text" name="price"/><br>

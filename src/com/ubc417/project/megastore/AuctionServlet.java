@@ -19,6 +19,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.ubc417.project.megastore.data.Auctions;
 import com.ubc417.project.megastore.data.Bids;
+import com.ubc417.project.megastore.data.Users;
 
 @SuppressWarnings("serial")
 public class AuctionServlet extends HttpServlet {
@@ -38,7 +39,7 @@ public class AuctionServlet extends HttpServlet {
 			Key key = KeyFactory.stringToKey(id);
 			Entity auction = ds.get(key);
 			req.setAttribute("auction", auction);
-			Entity owner = ds.get(auction.getParent());
+			Entity owner = Users.getMainEntityFromShard(auction.getParent());
 			req.setAttribute("owner", owner);
 			String startTime = new SimpleDateFormat("MM/dd/yyyy").format(auction.getProperty("startTime"));
 			String endTime = new SimpleDateFormat("MM/dd/yyyy").format(auction.getProperty("endTime"));

@@ -13,7 +13,8 @@ public class Auctions {
 			long startTime, 
 			long endTime,
 			int startingPrice) {
-		Entity itemEntity = new Entity("Auction", owner);
+		Key shardedOwner = Users.getShardedOwnerForAuction(owner);
+		Entity itemEntity = new Entity("Auction", shardedOwner);
 		itemEntity.setProperty("name", name);
 		itemEntity.setProperty("startTime", startTime);
 		itemEntity.setProperty("endTime", endTime);
@@ -47,10 +48,20 @@ public class Auctions {
 	
 	public static Iterable<Entity> getUserAuctions(Entity user) {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		Query query = new Query("Auction");
-		query.setAncestor(user.getKey());
+		ArrayList<Entity> results = new ArrayList<Entity>();
 		
-		return ds.prepare(query).asIterable();
+		for (int i = 0; i < Users.NUM_SHARDS; i++) {
+			Key shardedUser = KeyFactory.createKey("User", Users.getShardedUsername(user.getKey().getName(), i));
+			
+			Query query = new Query("Auction");
+			query.setAncestor(shardedUser);
+			
+			for (Entity e : ds.prepare(query).asIterable()) {
+				results.add(e);
+			}
+		}
+		
+		return results;
 	}
 	
 	public static void deleteAuction(Key auctionKey) {

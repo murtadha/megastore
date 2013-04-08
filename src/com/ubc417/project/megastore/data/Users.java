@@ -11,26 +11,43 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 
 public class Users {
-	public static Entity CreateUser(String username, String password, boolean store){
-		Entity userEntity = new Entity("User");
+	
+	public static final int NUM_SHARDS = 5;
+	
+	public static Entity CreateUser(String username, String password){
+		
 		ArrayList<String> arrayListSearchedStrings = new ArrayList<String>();
-		for(int i = 0; i<3; i++){
+		
+		for(int i = 0; i<3; i++) {
 			arrayListSearchedStrings.add("dummy");
 		}
 		
-		userEntity.setProperty("username", username);
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		
+		Entity userEntity = new Entity("User", getShardedUsername(username, 0));
 		userEntity.setProperty("password", password);
+		userEntity.setProperty("username", username);
+		userEntity.setProperty("shardNum", 0);
 		userEntity.setProperty("arrayListSearchedStrings", arrayListSearchedStrings);
 		
-		if(store){
-			DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
-			datastoreService.put(userEntity);
-		}
-		return userEntity;
+		ds.put(userEntity);
 		
+		for (int i = 1; i < NUM_SHARDS; i++) {
+			Entity userShard = new Entity("User", getShardedUsername(username, i));
+			userShard.setProperty("shardNum", i);
+			userShard.setProperty("username", username);
+			ds.put(userShard);
+		}
+			
+		return userEntity;
+	}
+	
+	public static String getShardedUsername(String username, int shard) {
+		return shard == 0 ? username : username + "_" + shard;
 	}
 	
 	public static Boolean DeleteUser(Key userKey){
@@ -66,5 +83,27 @@ public class Users {
 		}
 		
 		ds.put(user);
+	}
+
+	public static Key getShardedOwnerForAuction(Key owner) {
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		int totalAuctions = 0;
+		for (int i = 0; i < NUM_SHARDS; i++) {
+			Key shardedUser = KeyFactory.createKey("User", getShardedUsername(owner.getName(), i));
+			
+			Query query = new Query("Auction");
+			query.setAncestor(shardedUser);
+			
+			totalAuctions += ds.prepare(query).countEntities();
+		}
+		return KeyFactory.createKey("User", getShardedUsername(owner.getName(), totalAuctions % NUM_SHARDS));
+	}
+	
+	// Given a key for a user shard (with shardNum potentially > 0), we return the Entity
+	// that has shardNum = 0
+	public static Entity getMainEntityFromShard(Key userShard) throws EntityNotFoundException {
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Entity shard = ds.get(userShard);
+		return ds.get(KeyFactory.createKey("User", (String)shard.getProperty("username")));
 	}
 }
