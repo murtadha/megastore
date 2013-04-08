@@ -48,20 +48,34 @@ public class Users {
 		return shard == 0 ? username : username + "_" + shard;
 	}
 	
-	public static void DeleteUser(Key userKey){
+	public static boolean DeleteUser(Key userKey){
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		
-		//query grab all Bids where ancestor is auctionKey
-		Query q = new Query("Auction").setAncestor(userKey);
-		Iterable<Entity> iterableAuctionsToDelete = ds.prepare(q).asIterable();
-		
-		//delete all our bids
-		for(Entity auctionToDelete : iterableAuctionsToDelete){
-			ds.delete(auctionToDelete.getKey());
+		Iterable<Entity> iterableAuctionsToDelete = null;
+		try {
+			iterableAuctionsToDelete = Auctions.getUserAuctions(ds.get(userKey));
+		} catch (EntityNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
-		//delete our auction
-		ds.delete(userKey);
+		if(iterableAuctionsToDelete != null){
+			for(Entity auctionToDelete : iterableAuctionsToDelete){
+				ds.delete(auctionToDelete.getKey());
+			}
+		}
+		
+		if(userKey != null){
+			String username = userKey.getName();
+			for(int i = 0; i < NUM_SHARDS; i++){
+				Key key = KeyFactory.createKey("User", getShardedUsername(username, i));
+				ds.delete(key);
+			}
+			ds.delete(userKey);
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public static Iterable<Entity> GetAllUsers(){
