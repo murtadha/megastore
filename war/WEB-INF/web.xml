@@ -71,6 +71,15 @@
 		<url-pattern>/user</url-pattern>
 	</servlet-mapping>
 	
+	<servlet>
+		<servlet-name>Test</servlet-name>
+		<servlet-class>com.ubc417.project.megastore.test.TestServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Test</servlet-name>
+		<url-pattern>/test</url-pattern>
+	</servlet-mapping>
+	
 	<welcome-file-list>
 		<welcome-file>welcome.jsp</welcome-file>
 	</welcome-file-list>

@@ -51,6 +51,7 @@ public class Bids {
 						throw ex1;
 				}
 			}
+			if (i>0) System.out.println(i + " tries");
 			return true;
 		}
 	}
