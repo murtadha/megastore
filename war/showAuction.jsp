@@ -2,6 +2,7 @@
 <%@ page import="com.google.appengine.api.datastore.Entity" %>
 <%@ page import="com.google.appengine.api.datastore.KeyFactory" %>
 <%@ page import="com.google.appengine.api.datastore.Key" %>
+<%@ page import="com.ubc417.project.megastore.data.Users;" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org   /TR/html4/loose.dtd">
 <html>
 	<head>
@@ -28,6 +29,13 @@
 			<input type="hidden" name="auctionKey" value="<%= KeyFactory.keyToString(auction.getKey()) %>" />
 			<% if (owner.getKey().equals(((Entity)session.getAttribute("user")).getKey())) {%>
 				<input type="submit" value="Delete" name="action"/><br>
+				<h3>Bid History:</h3>
+				<ul>
+				<% Iterable<Entity> bidHistory = (Iterable<Entity>)request.getAttribute("bidHistory"); %>
+				<% if (bidHistory != null) for (Entity bid : bidHistory) { %>
+				<li><%= Users.getUserForKey((Key)bid.getProperty("bidder")).getProperty("username") %> bidded:<%= bid.getProperty("price") %></li>
+				<% } %>
+				</ul>
 			<% } else { %>
 				Bid:<input type="text" name="price"/><br>
 				<input type="submit" value="Bid" name="action"/><br>

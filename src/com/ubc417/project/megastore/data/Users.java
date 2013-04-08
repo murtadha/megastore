@@ -69,6 +69,18 @@ public class Users {
 		
 	}
 	
+	public static Entity getUserForKey(Key userKey){
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Entity userEntity = null;
+		try {
+			userEntity = ds.get(userKey);
+		} catch (EntityNotFoundException e) {
+			System.err.println("ERROR::User nto found in getUserForKey");
+			e.printStackTrace();
+		}
+		return userEntity;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static void addSearchString(Entity user, String searchStringToAdd) throws EntityNotFoundException{
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();

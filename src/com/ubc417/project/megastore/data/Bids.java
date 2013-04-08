@@ -83,4 +83,11 @@ public class Bids {
 		return ds.prepare(q).asIterable();
 	}
 	
+	public static Iterable<Entity> getBidsForAuction(Key auctionKey){
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Query q = new Query("Bid").setAncestor(auctionKey);
+		
+		return ds.prepare(q).asIterable();
+	}
+	
 }

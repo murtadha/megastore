@@ -51,6 +51,8 @@ public class AuctionServlet extends HttpServlet {
 				Entity bid = ds.get(highestBid);
 				price = bid.getProperty("price").toString();
 			}
+			Iterable<Entity> bidHistory = Bids.getBidsForAuction(key);
+			req.setAttribute("bidHistory", bidHistory);
 			req.setAttribute("highestBid", price);
 			req.setAttribute("startTime", startTime);
 			req.setAttribute("endTime", endTime);
