@@ -48,18 +48,20 @@ public class Users {
 		return shard == 0 ? username : username + "_" + shard;
 	}
 	
-	public static Boolean DeleteUser(Key userKey){
+	public static void DeleteUser(Key userKey){
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		if(userKey != null){
-			String username = userKey.getName(); 
-			for (int i = 0; i < NUM_SHARDS; i++) {
-				Key key = KeyFactory.createKey("User", getShardedUsername(username, i));
-				ds.delete(key);
-			}
-			return true;
-		} else {
-			return false;	
+		
+		//query grab all Bids where ancestor is auctionKey
+		Query q = new Query("Auction").setAncestor(userKey);
+		Iterable<Entity> iterableAuctionsToDelete = ds.prepare(q).asIterable();
+		
+		//delete all our bids
+		for(Entity auctionToDelete : iterableAuctionsToDelete){
+			ds.delete(auctionToDelete.getKey());
 		}
+		
+		//delete our auction
+		ds.delete(userKey);
 	}
 	
 	public static Iterable<Entity> GetAllUsers(){
@@ -88,13 +90,18 @@ public class Users {
 		//TODO:wrap in txn
 		ArrayList<String> arrayListSearchedStrings = ((ArrayList<String>) user.getProperty("arrayListSearchedStrings"));
 		
-		if(!arrayListSearchedStrings.contains(searchStringToAdd)){
-			if (arrayListSearchedStrings.size() >= NUM_SEARCH_STRINGS)
-				arrayListSearchedStrings.remove(0);
+		if(arrayListSearchedStrings == null){
+			arrayListSearchedStrings = new ArrayList<String>();
 			arrayListSearchedStrings.add(searchStringToAdd);
-			user.setProperty("arrayListSearchedStrings", arrayListSearchedStrings);
+		} else {
+			if(!arrayListSearchedStrings.contains(searchStringToAdd)){
+				if (arrayListSearchedStrings.size() >= NUM_SEARCH_STRINGS)
+					arrayListSearchedStrings.remove(0);
+				arrayListSearchedStrings.add(searchStringToAdd);
+			}
 		}
 		
+		user.setProperty("arrayListSearchedStrings", arrayListSearchedStrings);
 		ds.put(user);
 	}
 

@@ -85,13 +85,17 @@ public class Auctions {
 	public static ArrayList<Entity> getRecommendedAuctions(Entity user) {
 		ArrayList<String> searchStrings = (ArrayList<String>)user.getProperty("arrayListSearchedStrings");
 		ArrayList<Entity> results = new ArrayList<Entity>();
-		for (String s : searchStrings) {
-			for (Entity e : Auctions.searchAuctions(s)) {
-				if (!results.contains(e)) {
-					results.add(e);
+		
+		if(searchStrings != null){
+			for (String s : searchStrings) {
+				for (Entity e : Auctions.searchAuctions(s)) {
+					if (!results.contains(e)) {
+						results.add(e);
+					}
 				}
 			}
 		}
+		
 		return results;
 	}
 }
